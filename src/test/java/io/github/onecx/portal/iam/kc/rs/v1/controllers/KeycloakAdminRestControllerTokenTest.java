@@ -8,12 +8,14 @@ import org.eclipse.microprofile.jwt.Claims;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.jwt.auth.cdi.NullJsonWebToken;
 
-public class KeycloakAdminRestControllerTokenTest {
+@QuarkusTest
+class KeycloakAdminRestControllerTokenTest {
 
     @Test
-    public void resetPasswordTokenValidationTest() {
+    void resetPasswordTokenValidationTest() {
 
         JsonWebTokenImpl token = new JsonWebTokenImpl();
 

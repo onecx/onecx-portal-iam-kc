@@ -11,10 +11,10 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 @QuarkusTest
-public class KeycloakAdminRestControllerTest {
+class KeycloakAdminRestControllerTest {
 
     @Test
-    public void resetPasswordRequestValidationTest() {
+    void resetPasswordRequestValidationTest() {
         String accessToken = KeycloakAminUtil.getAccessToken(USER_ALICE, PASSWORD_ALICE);
 
         // null body
@@ -28,6 +28,14 @@ public class KeycloakAdminRestControllerTest {
         given().auth()
                 .oauth2(accessToken)
                 .body(new KeycloakAdminRestController.ResetPasswordRequestDTO(null))
+                .contentType(ContentType.JSON)
+                .put("/v1/iam/reset-password")
+                .then().statusCode(400);
+
+        // empty password
+        given().auth()
+                .oauth2(accessToken)
+                .body(new KeycloakAdminRestController.ResetPasswordRequestDTO(""))
                 .contentType(ContentType.JSON)
                 .put("/v1/iam/reset-password")
                 .then().statusCode(400);
