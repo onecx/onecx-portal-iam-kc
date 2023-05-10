@@ -14,6 +14,26 @@ import io.restassured.http.ContentType;
 public class KeycloakAdminRestControllerTest {
 
     @Test
+    public void resetPasswordRequestValidationTest() {
+        String accessToken = KeycloakAminUtil.getAccessToken(USER_ALICE, PASSWORD_ALICE);
+
+        // null body
+        given().auth()
+                .oauth2(accessToken)
+                .contentType(ContentType.JSON)
+                .put("/v1/iam/reset-password")
+                .then().statusCode(400);
+
+        // null password
+        given().auth()
+                .oauth2(accessToken)
+                .body(new KeycloakAdminRestController.ResetPasswordRequestDTO(null))
+                .contentType(ContentType.JSON)
+                .put("/v1/iam/reset-password")
+                .then().statusCode(400);
+    }
+
+    @Test
     public void resetPasswordTest() {
         String newPassword = "changedPassword";
 

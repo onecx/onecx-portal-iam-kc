@@ -9,7 +9,6 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.CredentialRepresentation;
 
@@ -33,13 +32,14 @@ public class KeycloakAdminRestController {
     @PUT
     @Path("/reset-password")
     @Operation(operationId = "resetPassword", summary = "Reset Keycloak User's password", description = "The password of user registered in keycloak is set to the new one.")
-    @APIResponses({
-            @APIResponse(responseCode = "204", description = "No content"),
-            @APIResponse(responseCode = "400", description = "Bad Request"),
-            @APIResponse(responseCode = "404", description = "Not Found"),
-            @APIResponse(responseCode = "500", description = "Internal Server Error"),
-    })
+    @APIResponse(responseCode = "204", description = "Password reset successful")
+    @APIResponse(responseCode = "400", description = "Bad Request")
+    @APIResponse(responseCode = "404", description = "Not Found")
+    @APIResponse(responseCode = "500", description = "Internal Server Error")
     public Response resetPassword(ResetPasswordRequestDTO request) {
+        if (request == null || request.password() == null || request.password().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         String userId = jwt.getSubject();
         if (userId == null || userId.isEmpty()) {
             return Response.status(401).build();
@@ -68,6 +68,6 @@ public class KeycloakAdminRestController {
 
     @RegisterForReflection
     public record ResetPasswordRequestDTO(String password) {
-    };
+    }
 
 }
