@@ -1,5 +1,8 @@
 package io.github.onecx.portal.iam.kc.rs.v1.controllers;
 
+import static io.github.onecx.portal.iam.kc.rs.v1.controllers.Security.*;
+
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -14,13 +17,12 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 
 import io.quarkus.keycloak.admin.client.common.KeycloakAdminClientConfig;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import io.quarkus.security.Authenticated;
 
 @Path("/v1/iam")
 @RequestScoped
-@Authenticated
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed({ ROLE_PORTAL_ADMIN, ROLE_PORTAL_SUPER_ADMIN, ROLE_PORTAL_USER })
 public class KeycloakAdminRestController {
 
     @Inject
@@ -42,19 +44,19 @@ public class KeycloakAdminRestController {
         }
         String userId = jwt.getSubject();
         if (userId == null || userId.isEmpty()) {
-            return Response.status(401).build();
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         String issuer = jwt.getIssuer();
         if (issuer == null || issuer.isEmpty()) {
-            return Response.status(401).build();
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         int index = issuer.lastIndexOf("/");
         if (index < 0) {
-            return Response.status(401).build();
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         String realmName = issuer.substring(index + 1);
         if (realmName.isEmpty()) {
-            return Response.status(401).build();
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
         CredentialRepresentation resetPassword = new CredentialRepresentation();
